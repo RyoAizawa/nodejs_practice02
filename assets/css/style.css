@@ -1,0 +1,70 @@
+@charset "UTF-8";
+/*-------------------------
+  初期値
+-------------------------*/
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", Meiryo, sans-serif;
+  color: #333;
+  font-size: 1.6rem;
+  text-size-adjust: 100%;
+  line-height: 2;
+  font-feature-settings: "palt";
+}
+ol,
+ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+table {
+  border-collapse: collapse;
+  /* table-layout: fixed; */
+  width: 100%;
+  text-align: center;
+}
+tr:nth-of-type(odd) {
+  background-color: #fbfbfb;
+}
+th,
+td {
+  border: 1px solid #ccc;
+  padding: 0 10px;
+}
+
+.clientList th {
+  text-align: center;
+  color: #fff;
+  background-color: #1db5fb;
+}
+
+button {
+  border: 1px solid #aaa;
+  cursor: pointer;
+}
+
+form {
+  max-width: 800px;
+  border: 1px solid #333;
+}
+form th {
+  width: 200px;
+}
+
+form input[type="text"] {
+  width: 100%;
+  height: 20px;
+}
+.radio {
+  display: inline-block;
+}
+select {
+  padding: 5px;
+}
+
+.error {
+  color: red;
+}

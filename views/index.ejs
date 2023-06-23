@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>顧客情報管理システム</title>
+        <meta name="description" content="node.js課題">
+        <link type="text/css" rel="stylesheet" href="./css/style.css">
+    </head>
+    <body>
+        <table class="clientList">
+            <tr>
+                <th>id</th>
+                <th>名前</th>
+                <th>フリガナ</th>
+                <th>性別</th>
+                <th>メールアドレス</th>
+                <th>電話番号</th>
+                <th>住所</th>
+                <th>都道府県</th>
+                <th>世帯数</th>
+                <th>更新</th>
+                <th>削除</th>
+            </tr>
+            <% personas.forEach(client => { %>
+                <tr>
+                    <td><%= client.id %></td>
+                    <td><%= client.name %></td>
+                    <td><%= client.kana_name %></td>
+                    <td><%= client.gender %></td>
+                    <td><%= client.email %></td>
+                    <td><%= client.phone %></td>
+                    <td><%= client.address %></td>
+                    <td><%= client.workplace %></td>
+                    <td><%= client.household %></td>
+                    <td><a href="/edit/<%= client.id %>"><button>更新</button></a></td>
+                    <td><a href="/delete/<%= client.id %>"><button>削除</button></a></td>
+                </tr>
+            <% }); %>
+        </table>
+
+        <p><a href="/create">ユーザーの追加</a></p>
+        <script>
+        </script>
+    </body>
+</html>
