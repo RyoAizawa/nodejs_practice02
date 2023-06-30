@@ -9,12 +9,12 @@
         <link type="text/css" rel="stylesheet" href="./css/style.css">
     </head>
     <body>
-        <form action="/search" method="post" class="searchForm">
+        <div class="searchForm">
             <input type="text" name="search">
-            <button type="submit">名前検索</button>
-        </form>
+            <button id="searchBtn">名前検索</button>
+        </div>
         <table class="clientList">
-            <tr>
+            <thead>
                 <th>id</th>
                 <th>名前</th>
                 <th>フリガナ</th>
@@ -26,24 +26,35 @@
                 <th>世帯数</th>
                 <th>更新</th>
                 <th>削除</th>
-            </tr>
-            <% personas.forEach(client => { %>
-                <tr>
-                    <td><%= client.id %></td>
-                    <td><%= client.name %></td>
-                    <td><%= client.kana_name %></td>
-                    <td><%= client.gender %></td>
-                    <td><%= client.email %></td>
-                    <td><%= client.phone %></td>
-                    <td><%= client.address %></td>
-                    <td><%= client.workplace %></td>
-                    <td><%= client.household %></td>
-                    <td><a href="/edit/<%= client.id %>"><button>更新</button></a></td>
-                    <td><a href="/delete/<%= client.id %>"><button>削除</button></a></td>
-                </tr>
-            <% }); %>
+            </thead>
+            <tbody>
+            </tbody>
         </table>
+
         <p><a href="/create">ユーザーの追加</a></p>
+
+        <script type="module">
+            import { createTableData } from './script/createTableData.js'
+            const personasOrg = JSON.parse('<%= JSON.stringify(personas) %>'.replace(/&#34;/g, '"'));
+            // ページ読み込み時は初期値を出力
+            window.onload = (event) => {
+                createTableData(personasOrg);
+            };
+
+            // 検索ボタン
+            const searchBtn = document.querySelector("#searchBtn")
+            searchBtn.addEventListener("click", () => {
+                const searchValue = document.querySelector("input[type='text'][name='search']").value;
+                const searchedPersonas = [];
+                personasOrg.map((person, index) => {
+                    // 部分一致しているか判定
+                    if(person["name"].indexOf(searchValue) > -1) {
+                        searchedPersonas.push(person);
+                    }
+                });
+                createTableData(searchedPersonas);
+            });
+        </script>
         <script>
         </script>
     </body>
