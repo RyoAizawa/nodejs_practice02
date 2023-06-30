@@ -9,12 +9,12 @@
         <link type="text/css" rel="stylesheet" href="./css/style.css">
     </head>
     <body>
-        <form action="/search" method="post" class="searchForm">
+        <div class="searchForm">
             <input type="text" name="search">
-            <button type="submit">名前検索</button>
-        </form>
+            <button id="searchBtn">名前検索</button>
+        </div>
         <table class="clientList">
-            <tr>
+            <thead>
                 <th>id</th>
                 <th>名前</th>
                 <th>フリガナ</th>
@@ -26,24 +26,155 @@
                 <th>世帯数</th>
                 <th>更新</th>
                 <th>削除</th>
-            </tr>
-            <% personas.forEach(client => { %>
-                <tr>
-                    <td><%= client.id %></td>
-                    <td><%= client.name %></td>
-                    <td><%= client.kana_name %></td>
-                    <td><%= client.gender %></td>
-                    <td><%= client.email %></td>
-                    <td><%= client.phone %></td>
-                    <td><%= client.address %></td>
-                    <td><%= client.workplace %></td>
-                    <td><%= client.household %></td>
-                    <td><a href="/edit/<%= client.id %>"><button>更新</button></a></td>
-                    <td><a href="/delete/<%= client.id %>"><button>削除</button></a></td>
-                </tr>
-            <% }); %>
+                <th>選択</th>
+            </thead>
+            <tbody id="clientList">
+            </tbody>
         </table>
+
         <p><a href="/create">ユーザーの追加</a></p>
+
+        <strong>選択した情報一覧</strong>
+        <table class="clientList">
+            <thead>
+                <th>id</th>
+                <th>名前</th>
+                <th>フリガナ</th>
+                <th>性別</th>
+                <th>メールアドレス</th>
+                <th>電話番号</th>
+                <th>住所</th>
+                <th>都道府県</th>
+                <th>世帯数</th>
+                <th>更新</th>
+                <th>削除</th>
+                <th>選択</th>
+            </thead>
+            <tbody id="selectedList">
+            </tbody>
+        </table>
+
+        <script type="module">
+            const personasOrg = JSON.parse('<%= JSON.stringify(personas) %>'.replace(/&#34;/g, '"'));
+            const selectedPersonas = [];
+
+            // ユーザーテーブル領域
+            const clientList = document.querySelector("#clientList");
+            // 選択済みユーザーテーブル領域
+            const selectedList = document.querySelector("#selectedList");
+
+            // ページ読み込み時は初期値を出力
+            window.onload = (event) => {
+                createTableData(personasOrg, clientList);
+            };
+
+            // リストに出力するデータを作成するメソッド
+            function createTableData(personasObj, clientList, selected = false) {
+                // リストは都度初期化
+                while(clientList.firstChild) {
+                    clientList.firstChild.remove()
+                }
+                // 渡されたオブジェクトの分だけリストデータの作成
+                personasObj.map((person) => {
+                    // テーブルデータの要素作成
+                    const tableRow          = document.createElement("tr")
+                    const clientId          = document.createElement("td")
+                    const clientName        = document.createElement("td")
+                    const clientKanaName    = document.createElement("td")
+                    const clientGender      = document.createElement("td")
+                    const clientMail        = document.createElement("td")
+                    const clientPhone       = document.createElement("td")
+                    const clientAddress     = document.createElement("td")
+                    const clientWorkPlace   = document.createElement("td")
+                    const clientHouseHold   = document.createElement("td")
+                    // 更新ボタンの要素作成
+                    const updateBtnTd       = document.createElement("td")
+                    const updateBtnLink     = document.createElement("a")
+                    const updateBtn         = document.createElement("button")
+                    // 削除ボタンの要素作成
+                    const deleteBtnTd       = document.createElement("td")
+                    const deleteBtnLink     = document.createElement("a")
+                    const deleteBtn         = document.createElement("button")
+                    // 選択ボタンの要素作成
+                    const selectBtnTd       = document.createElement("td")
+                    // const selectBtnLink     = document.createElement("a")
+                    const selectBtn         = document.createElement("button")
+                    // ユーザーデータから値を入れる
+                    clientId.innerHTML          = person["id"]
+                    clientName.innerHTML        = person["name"]
+                    clientKanaName.innerHTML    = person["kana_name"]
+                    clientGender.innerHTML      = person["gender"]
+                    clientMail.innerHTML        = person["email"]
+                    clientPhone.innerHTML       = person["phone"]
+                    clientAddress.innerHTML     = person["address"]
+                    clientWorkPlace.innerHTML   = person["workplace"]
+                    clientHouseHold.innerHTML   = person["household"]
+                    updateBtn.innerHTML         = "更新"
+                    deleteBtn.innerHTML         = "削除"
+                    selectBtn.innerHTML         = "選択"
+                    // 更新ボタンの作成
+                    updateBtnLink.setAttribute("href", `/edit/${clientId.innerHTML}`)
+                    updateBtnLink.appendChild(updateBtn)
+                    updateBtnTd.appendChild(updateBtnLink)
+                    // 削除ボタンの作成
+                    deleteBtnLink.setAttribute("href", `/delete/${clientId.innerHTML}`)
+                    deleteBtnLink.appendChild(deleteBtn)
+                    deleteBtnTd.appendChild(deleteBtnLink)
+                    // 選択ボタンの作成
+                    if(selected) selectBtn.setAttribute("disabled", true)
+                    selectBtnTd.appendChild(selectBtn)
+
+                    // テーブルの列へデータの追加
+                    tableRow.appendChild(clientId);
+                    tableRow.appendChild(clientName);
+                    tableRow.appendChild(clientKanaName);
+                    tableRow.appendChild(clientGender);
+                    tableRow.appendChild(clientMail);
+                    tableRow.appendChild(clientPhone);
+                    tableRow.appendChild(clientAddress);
+                    tableRow.appendChild(clientWorkPlace);
+                    tableRow.appendChild(clientHouseHold);
+                    tableRow.appendChild(updateBtnTd);
+                    tableRow.appendChild(deleteBtnTd);
+                    tableRow.appendChild(selectBtnTd);
+
+                    // テーブルへ列の追加
+                    clientList.appendChild(tableRow);
+
+                    // 検索ボタンを押した際の処理
+                    selectBtn.addEventListener("click", () => {
+                        // 選択済み配列に要素を追加
+                        selectedPersonas.push(person);
+                        // 選択した要素を配列から削除
+                        personasObj.splice(personasObj.indexOf(person), 1);
+
+                        // 選択した要素を抜いたリストの再作成
+                        createTableData(personasObj, clientList);
+                        // 選択した情報一覧のリストを再作成
+                        createTableData(selectedPersonas, selectedList, true);
+                    });
+                });
+            }
+            // 検索ボタン
+            const searchBtn = document.querySelector("#searchBtn")
+            // 検索ボタンを押した際の処理
+            searchBtn.addEventListener("click", () => {
+                const searchValue = document.querySelector("input[type='text'][name='search']");
+                const searchedPersonas = [];
+                personasOrg.map((person, index) => {
+                    // 部分一致しているか判定
+                    if(person["name"].indexOf(searchValue.value) > -1) {
+                        // 検索で一致したものを格納する配列に要素を追加
+                        searchedPersonas.push(person);
+                    }
+                });
+                // 一致した要素でリストを再作成
+                createTableData(searchedPersonas, clientList);
+                // 入力欄の初期化
+                searchValue.value = "";
+            });
+
+        </script>
         <script>
         </script>
     </body>
