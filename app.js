@@ -32,6 +32,23 @@ app.get("/", (req, res) => {
     });
 });
 
+// 検索
+app.post("/search", (req, res) => {
+    // 検索ワードの取得(%はワイルドカード)
+    const search = "%" + req.body.search + "%";
+    let sql = ""
+    // 検索語句が空だったら全ての情報取得
+    if(search === "") sql = "select * from personas";
+    else sql = "select * from personas where name LIKE ?";
+    con.query(sql, search, function (err, result, fields) {
+        if (err) throw err;
+        // 取得出来たらトップに戻る
+        res.render("index", {
+            personas: result,
+        });
+    });
+});
+
 app.get("/edit/:id", (req, res) => {
     const sql = "SELECT * FROM personas WHERE id = ?";
     con.query(sql, [req.params.id], function (err, result, fields) {

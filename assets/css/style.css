@@ -46,21 +46,35 @@ button {
   cursor: pointer;
 }
 
-form {
+.searchForm {
+    text-align: center;
+    background-color: #f9e6e6;
+    padding: 10px;
+    margin: 10px 0;
+    width: 300px;
+}
+
+.searchForm input {
+    height: 20px;
+    width: 200px;
+}
+
+.editForm {
   max-width: 700px;
   border: 1px solid #333;
 }
-form th {
+.editForm th {
   width: 200px;
 }
 
-form input[type="text"] {
+.editForm input[type="text"] {
   width: 100%;
   height: 20px;
 }
 .radio {
   display: inline-block;
 }
+
 select {
   padding: 5px;
 }
