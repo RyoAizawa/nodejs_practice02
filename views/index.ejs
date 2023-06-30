@@ -9,6 +9,10 @@
         <link type="text/css" rel="stylesheet" href="./css/style.css">
     </head>
     <body>
+        <form action="/search" method="post" class="searchForm">
+            <input type="text" name="search">
+            <button type="submit">名前検索</button>
+        </form>
         <table class="clientList">
             <tr>
                 <th>id</th>
@@ -39,7 +43,6 @@
                 </tr>
             <% }); %>
         </table>
-
         <p><a href="/create">ユーザーの追加</a></p>
         <script>
         </script>

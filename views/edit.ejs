@@ -10,7 +10,7 @@
     </head>
     <body>
         <h1>更新フォーム</h1>
-        <form action="/update/<%= personas[0].id %>" method="POST">
+        <form action="/update/<%= personas[0].id %>" method="POST" class="editForm">
         <!-- <form action="javascript:void(0)" method="POST"> -->
             <table>
                 <tr>
@@ -59,112 +59,33 @@
                     <td><input type="text" name="household" value="<%= personas[0].household %>"><span id="householdError" class="error"></span></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><button type="submit" onclick="return formValidation()">更新</button></td>
+                    <td colspan="2"><button type="submit" id="btn">更新</button></td>
                 </tr>
             </table>
         </form>
+        <script type="module">
+            // バリデーションチェック
+            import {formValidation} from '../script/formValidation.js'
+            const btn = document.querySelector("#btn")
+            btn.addEventListener("click", (event) =>{
+                if(!formValidation()) event.preventDefault();
+            })
+        </script>
         <script>
+            // 選択済みの性別を取得し反映
             const personas = JSON.parse('<%= JSON.stringify(personas) %>'.replace(/&#34;/g, '"'));
             const radio = document.getElementsByName("gender");
             radio.forEach(element => {
                 if (personas[0].gender === element.value) element.checked = true;
             });
 
+            // 選択済みの都道府県を取得し反映
             const prefectures = JSON.parse('<%= JSON.stringify(prefectures) %>'.replace(/&#34;/g, '"'));
             const workplace = document.getElementsByName("workplace")[0];
             for (let i = 0; i < workplace.options.length; i++) {
                 if (personas[0].workplace === workplace.options[i].value) {
                     workplace.options[i].selected = true;
                 };
-            };
-
-            function formValidation() {
-                let name = document.getElementsByName("name")[0];
-                let kana_name = document.getElementsByName("kana_name")[0];
-                let gender = document.getElementsByName("gender");
-                let email = document.getElementsByName("email")[0];
-                let phone = document.getElementsByName("phone")[0];
-                let address = document.getElementsByName("address")[0];
-                let workplace = document.getElementsByName("workplace")[0];
-                let household = document.getElementsByName("household")[0];
-
-                let nameError = document.getElementById("nameError")
-                let kana_nameError = document.getElementById("kana_nameError")
-                let genderError = document.getElementById("genderError")
-                let emailError = document.getElementById("emailError")
-                let phoneError = document.getElementById("phoneError")
-                let addressError = document.getElementById("addressError")
-                let workplaceError = document.getElementById("workplaceError")
-                let householdError = document.getElementById("householdError")
-                let error = false;
-
-                // エラーメッセージの初期化
-                nameError.innerHTML = "";
-                kana_nameError.innerHTML = "";
-                genderError.innerHTML = "";
-                emailError.innerHTML = "";
-                phoneError.innerHTML = "";
-                addressError.innerHTML = "";
-                workplaceError.innerHTML = "";
-                householdError.innerHTML = "";
-
-                // メールアドレス
-                // (半角英数で始まる)＋(半角英数と_と.は入力可)＋(@)＋(半角英数と_と.は入力可)＋(.を挟み1文字以上入力)
-                const emailVal = /^[A-Za-z0-9]{1}[A-Za-z0-9_.-]*@{1}[A-Za-z0-9_.-]{1,}.[A-Za-z0-9]{1,}$/;
-                // 電話番号
-                const phoneVal = /^0\d{9,10}$/;
-                // 世帯数
-                const householdVal = /^[0-9]/
-
-                // 名前が入力されているかチェック
-                if (name.value === "") {
-                    nameError.innerHTML = "名前を入力してください。";
-                    error = true;
-                };
-                // フリガナにカタカナが入力されているかチェック
-                if (kana_name.value === "") {
-                    kana_nameError.innerHTML = "フリガナを入力してください。";
-                    error = true;
-                };
-                // 性別の選択がされているかチェック
-                let checked = false;
-                gender.forEach(elem => { if (elem.checked) checked = true; });
-                if (!checked) {
-                    genderError.innerHTML = "性別を選択してください";
-                    error = true;
-                }
-
-                // メールアドレス正しく入力されているかチェック
-                if (email.value === "" || !email.value.match(emailVal)) {
-                    emailError.innerHTML = "メールアドレスを入力してください。";
-                    error = true;
-                }
-                // 電話番号が正しく入力されているかチェック
-                if (phone.value === "" || !phone.value.match(phoneVal)) {
-                    phoneError.innerHTML = "電話番号を入力してください。";
-                    error = true;
-                }
-                // 住所が入力されているかチェック
-                if (address.value === "") {
-                    addressError.innerHTML = "住所を入力してください。";
-                    error = true;
-                }
-                // 都道府県が選択されているかチェック
-                for (let i = 0; i < workplace.options.length; i++) {
-                    if (workplace.options[i].selected) {
-                        if (workplace.options[i].value === "") {
-                            workplaceError.innerHTML = "都道府県を選択してください。";
-                            error = true;
-                        }
-                    }
-                }
-                // 世帯数が入力されているかチェック
-                if (household.value === "" || !household.value.match(householdVal)) {
-                    householdError.innerHTML = "世帯人数を入力してください。";
-                    error = true;
-                }
-                if (error) return false;
-                return true;
             };
         </script>
     </body>
