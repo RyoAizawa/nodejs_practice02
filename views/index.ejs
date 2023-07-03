@@ -54,21 +54,33 @@
             </tbody>
         </table>
 
-        <script type="module">
-            const personasOrg = JSON.parse('<%= JSON.stringify(personas) %>'.replace(/&#34;/g, '"'));
-            const selectedPersonas = [];
+        <div class="totalArea">
+            <div class="total">
+                <p>性別統計<button id="genderTotalBtn">集計</button></p>
+                <ul id="genderTotalList"></ul>
+            </div>
+            <div class="total">
+                <p>都道府県人数統計<button id="workplaceTotalBtn">集計</button></p>
+                <ul id="workplaceTotalList"></ul>
+            </div>
+            <div class="total">
+                <p>世帯数統計<button id="householdTotalBtn">集計</button></p>
+                <ul id="householdTotalList"></ul>
+            </div>
+        </div>
 
-            // ユーザーテーブル領域
-            const clientList = document.querySelector("#clientList");
-            // 選択済みユーザーテーブル領域
-            const selectedList = document.querySelector("#selectedList");
-
+        <script>
             // ページ読み込み時は初期値を出力
-            window.onload = (event) => {
+            window.onload = () => {
                 createTableData(personasOrg, clientList);
             };
 
-            // リストに出力するデータを作成するメソッド
+            /*
+            リストに出力するデータを作成するメソッド
+                personasObj...作成するユーザーのオブジェクト群
+                clientList ...ユーザーを表示するリスト
+                selected   ...「選択」を押した場合（選択ボタンがdisabledになる）
+            */
             function createTableData(personasObj, clientList, selected = false) {
                 // リストは都度初期化
                 while(clientList.firstChild) {
@@ -155,10 +167,9 @@
                     });
                 });
             }
-            // 検索ボタン
-            const searchBtn = document.querySelector("#searchBtn")
+
             // 検索ボタンを押した際の処理
-            searchBtn.addEventListener("click", () => {
+            document.querySelector("#searchBtn").addEventListener("click", () => {
                 const searchValue = document.querySelector("input[type='text'][name='search']");
                 const searchedPersonas = [];
                 personasOrg.map((person, index) => {
@@ -168,11 +179,60 @@
                         searchedPersonas.push(person);
                     }
                 });
+                // 選択済みの人たちは検索結果からは削除する
+                searchedPersonas.forEach((person) => {
+                    // 選択した要素を配列から削除
+                    selectedPersonas.splice(selectedPersonas.indexOf(person), 1);
+                });
                 // 一致した要素でリストを再作成
                 createTableData(searchedPersonas, clientList);
                 // 入力欄の初期化
                 searchValue.value = "";
             });
+
+            // 各統計用のボタンを押した際の処理
+            function totalCount() {
+                const listId = `#${this.select}TotalList`
+                const totalList = document.querySelector(listId)
+                console.log(totalList)
+                // リストは都度初期化
+                while(totalList.firstChild) {
+                    totalList.firstChild.remove()
+                }
+                // ユニークな値を取り出す
+                let uniqueArray = new Set()
+                personasOrg.map((person, index) => {
+                    uniqueArray.add(person[this.select]);
+                })
+                const resultObj = {};
+                // 取り出した値をオブジェクトのキー名に設定
+                uniqueArray.forEach((elem, index) => {
+                    resultObj[elem] = ""
+                })
+                // 取り出した値と一致する項目の集計
+                Object.keys(resultObj).forEach((key, index) => {
+                    let count = 0
+                    personasOrg.map((person, index)=> {
+                        // キーと取り出した値が一致したらカウント
+                        if(String(person[this.select]) === key) resultObj[key] = ++count
+                    })
+                    // 結果の出力
+                    totalList.insertAdjacentHTML("beforeend", `<li>${key}${this.sub}：${resultObj[key]}人</li>`)
+                })
+            }
+            // オリジナルのユーザー情報の取得
+            const personasOrg = JSON.parse('<%= JSON.stringify(personas) %>'.replace(/&#34;/g, '"'));
+            // 選択済みユーザー一覧用の配列
+            const selectedPersonas = [];
+            // ユーザーテーブル領域
+            const clientList = document.querySelector("#clientList");
+            // 選択済みユーザーテーブル領域
+            const selectedList = document.querySelector("#selectedList");
+
+            // 各集計ボタン
+            document.querySelector("#genderTotalBtn").addEventListener("click", {select: "gender", sub: "", handleEvent: totalCount})
+            document.querySelector("#workplaceTotalBtn").addEventListener("click", {select: "workplace", sub: "", handleEvent: totalCount})
+            document.querySelector("#householdTotalBtn").addEventListener("click", {select: "household", sub: "人世帯", handleEvent: totalCount})
 
         </script>
         <script>
